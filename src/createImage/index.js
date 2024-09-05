@@ -1,5 +1,6 @@
 const {getChartData} = require('./getChartData');
 const sharp = require('sharp');
+const { createCanvas, loadImage } = require('@napi-rs/canvas');
 
 const gray20 = '#7A859E';
 const dragon = '#65B67D';
@@ -8,15 +9,15 @@ const gray70 = '#1E2028';
 const gray40 = '#464A5C';
 const gray25 = '#E9EAF0';
 
-exports.createImage = async ({forecast, imagePath, prices}) => {
+exports.createImage = async ({forecast, imagePath}) => {
   const width = 1200;
   const height = 630;
   const marginX = 32;
   const marginY = 80;
 
-  const {signalOpenDateIndex, signalCloseDateIndex, preparedPrices} = await getChartData(forecast, prices);
+  const {signalOpenDateIndex, signalCloseDateIndex, prices} = await getChartData(forecast);
 
-  const chartPoints = preparedPrices.map(({datetime, value}) => [Number(new Date(datetime)), value]);
+  const chartPoints = prices.map(({datetime, value}) => [Number(new Date(datetime)), value]);
 
   const minDate = Math.min(...chartPoints.map(([x]) => x));
   const minPrice = Math.min(...chartPoints.map(([, y]) => y));
@@ -89,7 +90,16 @@ exports.createImage = async ({forecast, imagePath, prices}) => {
   `.replace(/\n/g, '');
 
 
-  await sharp(Buffer.from(svg)).png().toFile(imagePath);
+  const imageBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
+  const img = await loadImage(imageBuffer);
+  const canvas = createCanvas(img.width, img.height);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  ctx.fillText('Hello, Sharp!', 50, 100); // Draw text
+  const meme = await loadImage('down.png');
+  ctx.drawImage(meme, 0, 0, 93, 93);
+  const buffer = canvas.toBuffer('image/png');
+  await sharp(buffer).png().toFile(imagePath);
 };
 
 function getBanner() {

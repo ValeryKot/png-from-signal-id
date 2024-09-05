@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.54",
+    "canvas": "^2.11.2",
     "express": "^4.17.1",
     "moment": "^2.29.2",
     "node-fetch": "^2.6.1",
