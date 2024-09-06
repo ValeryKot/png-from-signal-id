@@ -1,6 +1,12 @@
 const {getChartData} = require('./getChartData');
 const sharp = require('sharp');
-const { createCanvas, loadImage } = require('@napi-rs/canvas');
+const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas');
+const { registerFont } = require('canvas');
+
+GlobalFonts.registerFromPath('./src/createImage/fonts/Poppins-Regular.ttf', 'Poppins');
+GlobalFonts.registerFromPath('./src/createImage/fonts/Poppins-Bold.ttf', 'PoppinsBold');
+GlobalFonts.registerFromPath('./src/createImage/fonts/Poppins-SemiBold.ttf', 'PoppinsSemiBold');
+GlobalFonts.registerFromPath('./src/createImage/fonts/Poppins-Italic.ttf', 'PoppinsItalic');
 
 const gray20 = '#7A859E';
 const dragon = '#65B67D';
@@ -8,6 +14,10 @@ const phoenix = '#E4645B';
 const gray70 = '#1E2028';
 const gray40 = '#464A5C';
 const gray25 = '#E9EAF0';
+const textPrimary = '#313141';
+const textSecondary = '#6E778D';
+const successNormal = '#28A138';
+const errorNormal = '#D21C1C';
 
 exports.createImage = async ({forecast, imagePath}) => {
   const width = 1200;
@@ -95,9 +105,53 @@ exports.createImage = async ({forecast, imagePath}) => {
   const canvas = createCanvas(img.width, img.height);
   const ctx = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0);
-  ctx.fillText('Hello, Sharp!', 50, 100); // Draw text
-  const meme = await loadImage('down.png');
-  ctx.drawImage(meme, 0, 0, 93, 93);
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 50, 360, 580);
+  ctx.fillStyle = textPrimary;
+  ctx.font = "24px PoppinsSemiBold";
+  ctx.fillText('Signalizat0r', 150, 100); // Username
+  ctx.fillStyle = textSecondary;
+  ctx.font = "18px Poppins";
+  ctx.fillText('Signal details', 40, 175); // Signal details
+  ctx.fillStyle = textPrimary;
+  ctx.font = "24px PoppinsBold";
+  ctx.fillText('BTC/USD', 150, 225); // Tokens
+  ctx.fillStyle = textSecondary;
+  ctx.font = "18px Poppins";
+  ctx.fillText('Perfomance', 40, 275); // Signal details
+  ctx.fillStyle = successNormal;
+  ctx.font = "28px PoppinsSemiBold";
+  ctx.fillText('25%', 40, 315); // Perfomance value
+  ctx.fillStyle = textSecondary;
+  ctx.font = "18px Poppins";
+  ctx.fillText('Opening price', 40, 373); 
+  ctx.fillText('Closing price', 220, 373); 
+  ctx.fillStyle = "#E3E5EE";  // Divider background
+  ctx.fillRect(195, 363, 1, 46);
+  ctx.fillStyle = textPrimary;
+  ctx.font = "28px PoppinsSemiBold";
+  ctx.fillText('33000.00', 40, 407); // Price value
+  ctx.fillText('35000.00', 220, 407); // Price value
+  ctx.fillStyle = textSecondary;
+  ctx.font = "18px Poppins";
+  ctx.fillText('Leverage performance', 40, 457); 
+  ctx.fillStyle = successNormal;
+  ctx.font = "28px PoppinsSemiBold";
+  ctx.fillText('250% (10x)', 40, 497); // Leverage value
+  ctx.fillStyle = textSecondary;
+  ctx.font = "18px Poppins";
+  ctx.fillText('Status', 40, 547); 
+  ctx.fillStyle = textPrimary;
+  ctx.font = "28px PoppinsSemiBold";
+  ctx.fillText('Closed by take profit', 68, 584);
+  ctx.fillStyle = errorNormal;
+  ctx.beginPath();
+  ctx.arc(48, 576, 8, 0, 2 * Math.PI);
+  ctx.fill();
+
+
+  // const meme = await loadImage('down.png');
+  // ctx.drawImage(meme, 0, 0, 93, 93);
   const buffer = canvas.toBuffer('image/png');
   await sharp(buffer).png().toFile(imagePath);
 };
