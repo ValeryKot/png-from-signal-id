@@ -6,8 +6,10 @@
     "@napi-rs/canvas": "^0.1.54",
     "canvas": "^2.11.2",
     "express": "^4.17.1",
+    "lightweight-charts": "^4.2.1",
     "moment": "^2.29.2",
     "node-fetch": "^2.6.1",
+    "puppeteer": "^23.9.0",
     "sharp": "^0.30.3"
   },
   "scripts": {}

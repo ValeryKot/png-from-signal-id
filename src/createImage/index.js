@@ -1,7 +1,8 @@
-const {getChartData} = require('./getChartData');
+const { getChartData } = require('./getChartData');
 const sharp = require('sharp');
 const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas');
 const { registerFont } = require('canvas');
+const { getChart } = require('./getChart');
 
 GlobalFonts.registerFromPath('./src/createImage/fonts/Poppins-Regular.ttf', 'Poppins');
 GlobalFonts.registerFromPath('./src/createImage/fonts/Poppins-Bold.ttf', 'PoppinsBold');
@@ -26,6 +27,8 @@ exports.createImage = async ({forecast, imagePath}) => {
   const marginY = 80;
 
   const {signalOpenDateIndex, signalCloseDateIndex, prices} = await getChartData(forecast);
+
+  const chart = await getChart();
 
   const chartPoints = prices.map(({datetime, value}) => [Number(new Date(datetime)), value]);
 
@@ -78,30 +81,25 @@ exports.createImage = async ({forecast, imagePath}) => {
   const svg = `
     <svg width="${width}" height="${height}" preserveAspectRatio="none" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="white"/>
-      ${Array(15).fill().map((_, idx) => `<line stroke-dasharray="4 8" shape-rendering="crispEdges" stroke="${gray25}" stroke-width="1" x1="${idx * width / 15 + 50}" x2="${idx * width / 15 + 50}" y1="0" y2="${height}"/>`)}
-      ${Array(20).fill().map((_, idx) => `<line stroke-dasharray="4 8" shape-rendering="crispEdges" stroke="${gray25}" stroke-width="1" x1="0" x2="${width}" y1="${idx * height / 20 + 10}" y2="${idx * height / 20 + 10}"/>`)}
-      <polyline
-        fill="none"
-        points="${marginPoints.map(([x, y]) => `${x},${y}`).join(' ')}"
-        stroke="${gray20}"
-        strokeWidth="1"
-      />
-      <polyline
-        fill="none"
-        points="${marginPoints.slice(signalOpenDateIndex, signalCloseDateIndex || undefined).map(([x, y]) => `${x},${y}`).join(' ')}"
-        stroke="${signalCloseDateIndex === null ? gray70 : forecast.performance > 0 ? dragon : phoenix}"
-        strokeWidth="1"
-      />
-      ${signalCloseDateIndex !== null ? triangle(signalOpenDateIndex, forecast.direction === 'up', true) : ''}
-      ${signalCloseDateIndex !== null ? triangle(signalCloseDateIndex, forecast.direction !== 'up', false) : ''}
+      ${
+        signalCloseDateIndex !== null
+          ? triangle(signalOpenDateIndex, forecast.direction === "up", true)
+          : ''
+      }
+      ${
+        signalCloseDateIndex !== null
+          ? triangle(signalCloseDateIndex, forecast.direction !== "up", false)
+          : ''
+      }
       ${signalCloseDateIndex === null ? circle(signalOpenDateIndex) : ''}
       ${getBanner()}
     </svg>
   `.replace(/\n/g, '');
 
-
   const imageBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
+  const chartBuffer = await sharp(Buffer.from(chart)).png().toBuffer();
   const img = await loadImage(imageBuffer);
+  const imgWithChart = await loadImage(chartBuffer);
   const canvas = createCanvas(img.width, img.height);
   const ctx = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0);
@@ -148,7 +146,7 @@ exports.createImage = async ({forecast, imagePath}) => {
   ctx.beginPath();
   ctx.arc(48, 576, 8, 0, 2 * Math.PI);
   ctx.fill();
-
+  ctx.drawImage(imgWithChart, 455, 100);
 
   // const meme = await loadImage('down.png');
   // ctx.drawImage(meme, 0, 0, 93, 93);
