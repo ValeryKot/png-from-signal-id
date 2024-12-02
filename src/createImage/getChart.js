@@ -3,6 +3,17 @@ const puppeteer = require("puppeteer");
 
 const max = 37;
 const min = 22;
+const username = 'Signalizat0r';
+const avatar = 'https://avatars.githubusercontent.com/u/105372239?v=4';
+const dates = 'May 1 ‘22 13:45 - May 2 ‘22 13:45';
+const symbolIcon = 'https://avatars.githubusercontent.com/u/35343640?s=64&v=4';
+const symbol = 'BTC/USD';
+const perfomance = '25%';
+const leverage = '250% (x10)';
+const openPrice = '33000.00';
+const closePrice = '35000.00';
+const signalStatus = 'Closed by take profit';
+
 
 const html = `
   <!DOCTYPE html>
@@ -10,9 +21,9 @@ const html = `
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap');
   </style>
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body style="margin: 0; padding: 0">
-  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <div style="height: 630px; width: 1200px; background: white; display: flex; flex-flow: column">
       <div style="height: 52px; width: 1200px; display: flex; padding-left: 42px; align-items: center; background: #406EC7">
         <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,16 +40,16 @@ const html = `
       <div style="display: flex; justify-content: center; gap: 70px; margin-top: 24px;">
         <div style="height: 530px; width: 340px; display: flex; flex-flow: column">
           <div style="display: flex; align-items: center; gap: 14px;">
-            <img src="https://avatars.githubusercontent.com/u/105372239?v=4" style="height: 50px; width: 50px; border-radius: 50%"/>
+            <img src=${avatar} style="height: 50px; width: 50px; border-radius: 50%"/>
             <div style="width: 100%; display: flex; flex-flow: column; gap: 2px">
-              <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 600; line-height: normal; color: #313141;">Signalizat0r</div>
-              <div style="font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">May 1 ‘22 13:45 - May 2 ‘22 13:45</div>
+              <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 600; line-height: normal; color: #313141;">${username}</div>
+              <div style="font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">${dates}</div>
             </div>
           </div>
           <div style="margin-top: 24px; font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">Signal details</div>
           <div style="margin-top: 16px; display: flex; align-items: center; gap: 16px">
-            <img src="https://avatars.githubusercontent.com/u/35343640?s=64&v=4" style="height: 50px; width: 50px; border-radius: 50%"/>
-            <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 700; line-height: normal; color: #313141;">BTC/USD</div>
+            <img src=${symbolIcon} style="height: 50px; width: 50px; border-radius: 50%"/>
+            <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 700; line-height: normal; color: #313141;">${symbol}</div>
             <div style="display: flex; width: 105px; height: 28px; padding: 2px 6px; justify-content: center; align-items: center; gap: 6px; border-radius: 3px; border: 2px solid var(--Light-success-normal, #28A138);">
               <span style="font-family: Poppins; font-size: 14px; font-style: normal; font-weight: 600; line-height: 20px; color: #28A138">SanRise</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -48,26 +59,26 @@ const html = `
             </div>
           </div>
           <div style="margin-top: 16px; font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">Perfomance</div>
-          <div style="margin-top: 2px; font-family: Poppins; font-size: 28px; font-style: normal; font-weight: 600; line-height: normal; color: #28A138;">25%</div>
+          <div style="margin-top: 2px; font-family: Poppins; font-size: 28px; font-style: normal; font-weight: 600; line-height: normal; color: #28A138;">${perfomance}</div>
           <div style="margin-top: 16px; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; flex-flow: column; gap: 2px;">
               <div style="font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">Opening price</div>
-              <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 600; line-height: normal; color: #313141;">33000.00</div>
+              <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 600; line-height: normal; color: #313141;">${openPrice}</div>
             </div>
             <div style="width: 1px; height: 46px; background: #E3E5EE;"></div>
             <div style="display: flex; flex-flow: column; gap: 2px;">
               <div style="font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">Closing price</div>
-              <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 600; line-height: normal; color: #313141;">35000.00</div>
+              <div style="font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 600; line-height: normal; color: #313141;">${closePrice}</div>
             </div>
           </div>
           <div style="margin-top: 16px; font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">Leverage performance</div>
-          <div style="margin-top: 2px; font-family: Poppins; font-size: 28px; font-style: normal; font-weight: 600; line-height: normal; color: #28A138;">250% (10x)</div>
+          <div style="margin-top: 2px; font-family: Poppins; font-size: 28px; font-style: normal; font-weight: 600; line-height: normal; color: #28A138;">${leverage}</div>
           <div style="margin-top: 16px; font-family: Poppins; font-size: 18px; font-style: normal; font-weight: 400; line-height: normal; color: #6E778D;">Status</div>
           <div style="margin-top: 2px; font-family: Poppins; font-size: 28px; font-style: normal; font-weight: 600; line-height: normal; color: #28A138;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
               <circle cx="8" cy="8" r="8" fill="#D21C1C"/>
             </svg>
-            Closed by take profit</div>
+            ${signalStatus}</div>
         </div>
         <div style="height: 500px; width: 700px; font-family: Poppins;" id="firstContainer"></div>
       </div>
